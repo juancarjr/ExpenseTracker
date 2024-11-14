@@ -8,6 +8,11 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 def index(request):
     return render(request, 'index.html', {})
 
+def books_list(request):
+    books = Book.objects.all()
+    context = {'books': books}
+    return render(request, 'transactions-list.html', context)
+
 # def about(request):
 #     return render(request, 'about.html')
 

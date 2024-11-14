@@ -14,7 +14,12 @@ class BookResource(resources.ModelResource):
 @admin.register(Book)
 class BookAdmin(ImportExportModelAdmin):
     resource_classes = [BookResource]
-
+    search_fields = ['title', 'authors', 'published_date', 'subtitle' ]
+    list_display = ['title', 'publisher', 'published_date', 'distribution_expense']
+    list_filter = ['category']
+    ordering = ['title', 'published_date']
+    date_hierarchy = 'published_date'
+    empty_value_display = ' NONE'
 
 
 
