@@ -12,7 +12,7 @@ def books_list(request):
     # books = Book.objects.all()
     books = BookFilter(
         request.GET,
-        queryset=Book.objects.all()
+        queryset=Book.objects.all().select_related('category', 'publisher')
     )
     context = {'books': books}
     if request.htmx:

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'django_filters',
     'django_htmx',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -63,6 +64,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'expense_tracker.urls'
@@ -170,3 +172,5 @@ REST_FRAMEWORK = {
 }
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
+
+INTERNAL_IPS = ['127.0.0.1']
