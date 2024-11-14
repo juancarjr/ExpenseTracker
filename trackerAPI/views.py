@@ -15,6 +15,9 @@ def books_list(request):
         queryset=Book.objects.all()
     )
     context = {'books': books}
+    if request.htmx:
+        return render(request, 'partials/books-container.html', context)
+
     return render(request, 'books-list.html', context)
 
 class SingleBookItemView(generics.RetrieveUpdateDestroyAPIView):
