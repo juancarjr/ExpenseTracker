@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -165,3 +166,5 @@ REST_FRAMEWORK = {
         'hundred': '100/minute',
     },
 }
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
