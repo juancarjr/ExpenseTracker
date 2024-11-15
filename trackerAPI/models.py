@@ -1,4 +1,5 @@
 from django.db import models
+from .managers import BookQueryset
 
 class Category(models.Model):
     name = models.CharField(max_length=200, db_index=True)
@@ -25,6 +26,9 @@ class Book(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     distribution_expense = models.DecimalField(null=False, max_digits=5, decimal_places=2)
 
+    objects = BookQueryset.as_manager()
+
+    
     def __str__(self): 
         return self.title
 
