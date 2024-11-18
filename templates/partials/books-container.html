@@ -1,43 +1,69 @@
 {% load widget_tweaks %}
+{% load humanize %}
 
 <!-- Defaults to flex, switches to grid in medium sized screens -->
 <div class="flex flex-col-reverse md:grid md:grid-cols-6 md:gap-4" id="books-container">
-    <div class="col-span-5">
-        {% if books %}
+  
+  <div class="col-span-5">
+    <h1 class="mt-4 mb-6 prose prose-2x1 text-white">
+      Expenses
+    </h1>
 
-        <table class="table table-xs">
-          <thead class="text-xs text-white uppercase">
-            <tr>
-              <th class="px-6 py-3">Title</th>
-              <th class="px-6 py-3">Subtitle</th>
-              <th class="px-6 py-3">Authors</th>
-              <th class="px-6 py-3">Publisher</th>
-              <th class="px-6 py-3">Date</th>
-              <th class="px-6 py-3">Category</th>
-              <th class="px-6 py-3">Expenses</th>
-            </tr>
-          </thead>
+    <table class="table">
+      <thead class="text-xs text-white uppercase">
+        <tr>
+          <th class="px-6 py-3">Category</th>
+          <th class="px-6 py-3 text-center">Combined expenses</th>
+        </tr>
+      </thead>
 
-          <tbody>
-            {% for book in books.qs %}
-            <tr>
-              <td>{{ book.title }}</td>
-              <td>{{ book.subtitle }}</td>
-              <td>{{ book.authors }}</td>
-              <td>{{ book.publisher }}</td>
-              <td>{{ book.published_date }}</td>
-              <td>{{ book.category }}</td>
-              <td class="text-center">{{ book.distribution_expense }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+      <tbody>
+        {% for key, value in totals.items %}
+          <tr>
+            <td>{{ key | capfirst }}</td>
+            <td class="text-center">${{ value | floatformat:2| intcomma }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-      {% else %}
-        <p class="text-2xl text-white">No books found</p>
-      {% endif %}
+  <div class="col-span-5">
+      {% if books %}
 
-    </div>
+      <table class="table table-xs">
+        <thead class="text-xs text-white uppercase">
+          <tr>
+            <th class="px-6 py-3">Title</th>
+            <th class="px-6 py-3">Subtitle</th>
+            <th class="px-6 py-3">Authors</th>
+            <th class="px-6 py-3">Publisher</th>
+            <th class="px-6 py-3">Date</th>
+            <th class="px-6 py-3">Category</th>
+            <th class="px-6 py-3">Expenses</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for book in books.qs %}
+          <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.subtitle }}</td>
+            <td>{{ book.authors }}</td>
+            <td>{{ book.publisher }}</td>
+            <td>{{ book.published_date }}</td>
+            <td>{{ book.category | capfirst}}</td>
+            <td class="text-center">{{ book.distribution_expense | floatformat:2 | intcomma }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    {% else %}
+      <p class="text-2xl text-white">No books found</p>
+    {% endif %}
+
+  </div>
 
     <div class="col-span-1">
 

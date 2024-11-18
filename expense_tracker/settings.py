@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    #A set of Django template filters for adding a “human touch” to data.
+    'django.contrib.humanize',
 
     #project apps
     'trackerAPI',
