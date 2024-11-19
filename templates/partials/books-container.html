@@ -2,30 +2,35 @@
 {% load humanize %}
 
 <!-- Defaults to flex, switches to grid in medium sized screens -->
-<div class="flex flex-col-reverse md:grid md:grid-cols-6 md:gap-4" id="books-container">
-  
+<div class="flex flex-row-reverse md:grid md:grid-cols-6 md:gap-4" id="books-container">
+  <div class="col-span-6 overflow-x-auto">
+
+    <table class="table">
+      <thead class="text-xl text-white uppercase">
+          <tr>
+              <th class="px-6 py-3"></th>
+              {% for key in totals.keys %}
+                  <th class="px-6 py-3 text-center">{{ key | capfirst }}</th>
+              {% endfor %}
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <th class="px-6 py-3">Combined expenses</th>
+              {% for value in totals.values %}
+                  <td class="text-center">${{ value | floatformat:2 | intcomma }}</td>
+              {% endfor %}
+          </tr>
+      </tbody>
+    </table>
+  </div>
   <div class="col-span-5">
     <h1 class="mt-4 mb-6 prose prose-2x1 text-white">
       Expenses
     </h1>
 
-    <table class="table">
-      <thead class="text-xs text-white uppercase">
-        <tr>
-          <th class="px-6 py-3">Category</th>
-          <th class="px-6 py-3 text-center">Combined expenses</th>
-        </tr>
-      </thead>
 
-      <tbody>
-        {% for key, value in totals.items %}
-          <tr>
-            <td>{{ key | capfirst }}</td>
-            <td class="text-center">${{ value | floatformat:2| intcomma }}</td>
-          </tr>
-          {% endfor %}
-      </tbody>
-    </table>
+
   </div>
 
   <div class="col-span-5">
@@ -73,6 +78,21 @@
         <div class="mb-2 form-control">
           {{ books.form.search | add_label_class:"label text-white" }}
           {% render_field books.form.search class="select bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          {{ books.form.start_date | add_label_class:"label text-white" }}
+          {% render_field books.form.start_date class="input bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          {{ books.form.end_date | add_label_class:"label text-white" }}
+          {% render_field books.form.end_date class="input bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          <!-- {{ books.form.category | add_label_class:"label text-white" }} -->
+          {% render_field books.form.category class="text-green-500 border-gray-300 rounded focus:ring-green-500" %}
         </div>
     
         <button class="btn btn-success">
