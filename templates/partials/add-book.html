@@ -1,8 +1,6 @@
 {% load widget_tweaks %}
 
-<h1 class="mt-8 mb-4 prose-2xl text-white ">
-    Add Book
-  </h1>
+<h1 class="mt-8 mb-4 prose prose-2xl text-white"> Add book</h1>
 
 <form hx-post="{% url 'add_book' %}">
     <div class="mb-2 form-control text-white">
@@ -39,5 +37,8 @@
     </div>
     <button class="btn btn-success">
         Add
+    </button>
+    <button class="btn btn-error" hx-get="{% url 'books_list' %}" hx-target="#book-block" hx-push-url="true">
+        Cancel
     </button>
 </form>

@@ -21,21 +21,15 @@
     <!-- Custom files -->
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
 
-
     {% block extra_head %}
 
     {% endblock %}
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-
     {% include 'partials/navbar.html' %}
-
     <div class="max-w-screen-xl mx-auto p-4">
-
         {% block content %}
         {% endblock %}
     </div>
-
-    
 </body>
 </html>

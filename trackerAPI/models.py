@@ -22,7 +22,7 @@ class Publisher(models.Model):
     
 class Book(models.Model):
     title = models.CharField(max_length=200, db_index=True)
-    subtitle = models.CharField(max_length=200)
+    subtitle = models.CharField(max_length=200, null=True)
     authors = models.CharField(max_length=200)
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
     published_date = models.DateField(null=True)

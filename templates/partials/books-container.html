@@ -3,8 +3,8 @@
 
 <!-- Defaults to flex, switches to grid in medium sized screens -->
 <div class="flex flex-row-reverse md:grid md:grid-cols-6 md:gap-4" id="books-container">
+  <!-- Expenses table -->
   <div class="col-span-6 overflow-x-auto">
-
     <table class="table">
       <thead class="text-xl text-white uppercase">
           <tr>
@@ -26,6 +26,7 @@
       </tbody>
     </table>
   </div>
+
   <div class="col-span-5 flex items-center justify-between">
     <h1 class="mt-4 mb-6 prose text-2xl text-white flex items-center mb-4">
       <svg
@@ -56,9 +57,9 @@
       class="text-white no-underline cursor-pointer">
       Add Book</a>
     </h1>
-
   </div>
 
+  <!-- Main Table -->
   <div class="col-span-5">
       {% if books %}
 
