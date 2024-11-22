@@ -9,13 +9,16 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = 'Categories'
-
+        ordering = ['name']
 
 class Publisher(models.Model):
     name = models.CharField(max_length=200, db_index=True)
 
     def __str__(self) -> str:
         return self.name
+    
+    class Meta:
+        ordering = ['name']
     
 class Book(models.Model):
     title = models.CharField(max_length=200, db_index=True)
