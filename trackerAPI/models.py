@@ -1,5 +1,8 @@
 from django.db import models
 from .managers import BookQueryset
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Category(models.Model):
     name = models.CharField(max_length=200, db_index=True)
@@ -38,5 +41,25 @@ class Book(models.Model):
     class Meta:
         ordering = ['title']
 
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    date_added = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self) -> str:
+        return f'{self.user.username} - {self.book.title}'
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    favorite = models.ForeignKey(Favorite, on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        ordering = ['user']
+
+    def __str__(self):
+        return self.user.username
     
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+        UserProfile.objects.get_or_create(user=instance)
+

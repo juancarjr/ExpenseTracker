@@ -1,17 +1,19 @@
 from django.shortcuts import render
-from .models import Book, Category
-from .filters import BookFilter
+from django.contrib.auth.models import User
+from .models import Book, Category, Favorite
+from .filters import BookFilter, FavoriteFilter
 from .forms import BookForm
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django_htmx.http import retarget
-#TODO: WRITE TESTS
+from datetime import datetime
+from django.core.paginator import Paginator
+#TODO: WRITE TESTS, FAVORITES LIST
 
 def index(request):
     return render(request, 'index.html', {})
 
 def books_list(request):
-    # books = Book.objects.all()
     books = BookFilter(
         request.GET,
         queryset = Book.objects.all().select_related('category', 'publisher')
@@ -24,7 +26,6 @@ def books_list(request):
     context = {'books': books,
                'totals': total_expenses,
                'query_expense': query_expense}
-
     
 
     if request.htmx:
@@ -50,3 +51,42 @@ def add_book(request):
     
     context = {'form': BookForm}
     return render(request, 'partials/add-book.html', context)
+
+@permission_classes([IsAuthenticated])
+def favorites(request):
+    favorites = FavoriteFilter(
+        request.GET,
+        queryset = Favorite.objects.all().filter(user=request.user).select_related('user', 'book')
+    )
+    context = {'favorites': favorites}
+    if request.htmx:
+        return render(request, 'partials/favorite-container.html', context)
+    return render(request, 'favorite-list.html', context)
+
+@permission_classes([IsAuthenticated])
+def favorites_delete(request, pk):
+    Favorite.objects.filter(id=pk).delete()
+    favorites = FavoriteFilter(
+        request.GET,
+        queryset = Favorite.objects.all().filter(user=request.user).select_related('user', 'book')
+    )
+    context = {'favorites': favorites}
+    if request.htmx:
+        return render(request, 'partials/favorite-container.html', context)
+    
+@permission_classes([IsAuthenticated])
+def favorites_add(request, pk):
+    Favorite.objects.create(user=request.user, book=Book.objects.get(id=pk), date_added=datetime.now())
+    books = BookFilter(
+        request.GET,
+        queryset = Book.objects.all().select_related('category', 'publisher')
+    )
+    total_expenses = {}
+    for category in Category.objects.all():
+        total_expenses[category] = Book.objects.get_expenses(category)
+    query_expense = Book.objects.get_total_expenses()
+    context = {'books': books,
+               'totals': total_expenses,
+               'query_expense': query_expense}
+    if request.htmx:
+        return render(request, 'partials/books-container.html', context)

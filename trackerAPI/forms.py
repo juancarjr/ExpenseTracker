@@ -1,5 +1,6 @@
 from django import forms
-from .models import Book, Category
+from .models import Book, Favorite
+from django.contrib.auth.models import User
 from datetime import date
 
 class BookForm(forms.ModelForm):
@@ -22,3 +23,15 @@ class BookForm(forms.ModelForm):
         expense = self.cleaned_data['distribution_expense']
         if expense <= 0:
             raise forms.ValidationError('Expense must be greater than zero')
+        
+class FavoriteForm(forms.ModelForm):
+    class Meta:
+        model = Favorite
+        fields = '__all__'
+    
+    def add_favorite(user: User, book: Book): 
+        favorite = Favorite.objects.get_or_create(user=user, book=book) 
+        return favorite
+    
+    def remove_favorite(user: User, book: Book): 
+        Favorite.objects.filter(user=user, book=book).delete()

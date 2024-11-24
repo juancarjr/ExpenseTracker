@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 from import_export import resources
-from .models import Book, Category, Publisher
+from .models import Book, Category, Publisher, UserProfile, Favorite
 
 
 class BookResource(resources.ModelResource):
@@ -36,3 +36,6 @@ class CategoryAdmin(ImportExportModelAdmin):
 @admin.register(Publisher)
 class PublisherAdmin(ImportExportModelAdmin):
     resource_classes = [PublisherResource]
+
+admin.site.register(UserProfile)
+admin.site.register(Favorite)

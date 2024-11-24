@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load humanize %}
+
+{% block head_title %} Favorites {% endblock %}
+
+{% block content %}
+
+<h1 class="mt-4 mb-6 text-2xl leading-none tracking-tight text-white md:text-3xl lg:text-4xl flex items-center mb-4">
+  Favorites
+</h1>
+
+
+<div class="relative overflow-x-auto text-white flex flex-row-reverse md:grid md:grid-cols-6 md:gap-4" id="favorites">
+ 
+  <div class="col-span-5">
+    {% if favorites %}
+
+    <table class="table table-xs text-center">
+      <thead class="text-xs text-white uppercase">
+        <tr>
+          <th class="px-6 py-3">Title</th>
+          <th class="px-6 py-3">Subtitle</th>
+          <th class="px-6 py-3">Authors</th>
+          <th class="px-6 py-3">Publisher</th>
+          <th class="px-6 py-3">Date</th>
+          <th class="px-6 py-3">Category</th>
+          <th class="px-6 py-3">Expenses</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for favorite in favorites.qs %}
+        <tr>
+          <td>{{ favorite.book.title }}</td>
+          <td>{{ favorite.book.subtitle }}</td>
+          <td>{{ favorite.book.authors }}</td>
+          <td>{{ favorite.book.publisher }}</td>
+          <td>{{ favorite.book.published_date }}</td>
+          <td>{{ favorite.book.category | capfirst}}</td>
+          <td>{{ favorite.book.distribution_expense | floatformat:2 | intcomma }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  {% else %}
+    <p class="text-2xl text-white">No favorites found</p>
+  {% endif %}
+
+  </div>
+  <div class="col-span-1">
+    <form hx-get="{% url 'favorites' %}" 
+        hx-target="#favorites"
+        hx-swap="outerHTML">
+        <div class="mb-2 form-control">
+          {{ favorites.form.search | add_label_class:"label text-white" }}
+          {% render_field favorites.form.search class="select bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          {{ favorites.form.start_date | add_label_class:"label text-white" }}
+          {% render_field favorites.form.start_date class="input bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          {{ favorites.form.end_date | add_label_class:"label text-white" }}
+          {% render_field favorites.form.end_date class="input bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          {{ favorites.form.category | add_label_class:"label text-white" }}
+          {% render_field favorites.form.category class="text-green-500 border-gray-300 rounded focus:ring-green-500" %}
+        </div>
+    
+        <button class="btn btn-success">
+          Filter
+        </button>
+  </div>
+</div>
+
+{% endblock %}

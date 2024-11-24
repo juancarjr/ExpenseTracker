@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block head_title %} Favorites {% endblock %}
+
+{% block content %}
+
+<div class="relative overflow-x-auto text-white" id="favorite-block">
+  <h1 class="mt-4 mb-6 text-2xl leading-none tracking-tight text-white md:text-3xl lg:text-4xl flex items-center mb-4">
+    Favorites
+  </h1>
+
+  {% include 'partials/favorite-container.html' %}
+</div>
+
+{% endblock %}
