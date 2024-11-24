@@ -28,10 +28,3 @@ class FavoriteForm(forms.ModelForm):
     class Meta:
         model = Favorite
         fields = '__all__'
-    
-    def add_favorite(user: User, book: Book): 
-        favorite = Favorite.objects.get_or_create(user=user, book=book) 
-        return favorite
-    
-    def remove_favorite(user: User, book: Book): 
-        Favorite.objects.filter(user=user, book=book).delete()

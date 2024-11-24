@@ -77,7 +77,7 @@
         </thead>
 
         <tbody>
-          {% for book in books.qs %}
+          {% for book in page_obj %}
           <tr>
             <td>{{ book.title }}</td>
             <td>{{ book.subtitle }}</td>
@@ -105,6 +105,38 @@
     {% else %}
       <p class="text-2xl text-white">No books found</p>
     {% endif %}
+      
+    <div class="mt-4 text-center">
+      {% if page_obj.has_previous %}
+          <a href="{% querystring page=page_obj.previous_page_number %}">« Previous page</a>
+  
+          {% if page_obj.number > 3 %}
+              <a href="{% querystring page=1 %}">1</a>
+              {% if page_obj.number > 4 %}
+                  <span>...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+  
+      {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+              <a href="{% querystring page=num %}">{{ num }}</a>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <a href="{% querystring page=num %}">{{ num }}</a>
+          {% endif %}
+      {% endfor %}
+  
+      {% if page_obj.has_next %}
+          {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+              <span>...</span>
+              <a href="{% querystring page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+          {% elif page_obj.number < page_obj.paginator.num_pages|add:'-2' %}
+              <a href="{% querystring page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+          {% endif %}
+  
+          <a href="{% querystring page=page_obj.next_page_number %}">Next Page »</a>
+      {% endif %}
+  </div>
   
   </div>
   
@@ -112,7 +144,8 @@
   <div class="col-span-1">
       <form hx-get="{% url 'books_list' %}" 
         hx-target="#books-container"
-        hx-swap="outerHTML">
+        hx-swap="outerHTML"
+        hx-push-url="true">
         <div class="mb-2 form-control">
           {{ books.form.search | add_label_class:"label text-white" }}
           {% render_field books.form.search class="select bg-gray-50 text-gray-900" %}
@@ -138,6 +171,5 @@
         </button>
     
       </form>
-      
   </div>
 </div>

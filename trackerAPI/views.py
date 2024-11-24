@@ -14,6 +14,7 @@ def index(request):
     return render(request, 'index.html', {})
 
 def books_list(request):
+    page_num = request.GET.get('page', 1)
     books = BookFilter(
         request.GET,
         queryset = Book.objects.all().select_related('category', 'publisher')
@@ -23,10 +24,13 @@ def books_list(request):
         total_expenses[category] = Book.objects.get_expenses(category)
 
     query_expense = Book.objects.get_total_expenses()
+    paginator = Paginator(books.qs, 30)
+    page_obj = paginator.get_page(page_num)
+
     context = {'books': books,
                'totals': total_expenses,
-               'query_expense': query_expense}
-    
+               'query_expense': query_expense,
+               'page_obj': page_obj}
 
     if request.htmx:
         return render(request, 'partials/books-container.html', context)
