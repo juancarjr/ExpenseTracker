@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django_filters',
     'django_htmx',
     'debug_toolbar',
+    'template_partials',
 ]
 
 MIDDLEWARE = [

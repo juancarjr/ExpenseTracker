@@ -22,9 +22,9 @@ def books_list(request):
     total_expenses = {}
     for category in Category.objects.all():
         total_expenses[category] = Book.objects.get_expenses(category)
-
+    PAGE_SIZE = 30
     query_expense = Book.objects.get_total_expenses()
-    paginator = Paginator(books.qs, 30)
+    paginator = Paginator(books.qs, PAGE_SIZE)
     page_obj = paginator.get_page(page_num)
 
     context = {'books': books,
@@ -94,3 +94,14 @@ def favorites_add(request, pk):
                'query_expense': query_expense}
     if request.htmx:
         return render(request, 'partials/books-container.html', context)
+    
+def get_books(request):
+    page = request.GET.get('page', 1)
+    books = BookFilter(
+        request.GET,
+        queryset = Book.objects.all().select_related('category', 'publisher')
+    )
+    PAGE_SIZE = 30
+    paginator = Paginator(books.qs, PAGE_SIZE)
+    context = {'page_obj': paginator.page(page)}
+    return render(request, 'partials/books-container.html#infinite_list', context)

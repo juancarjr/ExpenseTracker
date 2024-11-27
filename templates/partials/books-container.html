@@ -1,5 +1,6 @@
 {% load widget_tweaks %}
 {% load humanize %}
+{% load partials %}
 
 <!-- Defaults to flex, switches to grid in medium sized screens -->
 <div class="flex flex-row-reverse md:grid md:grid-cols-6 md:gap-4" id="books-container">
@@ -77,28 +78,37 @@
         </thead>
 
         <tbody>
-          {% for book in page_obj %}
-          <tr>
-            <td>{{ book.title }}</td>
-            <td>{{ book.subtitle }}</td>
-            <td>{{ book.authors }}</td>
-            <td>{{ book.publisher }}</td>
-            <td>{{ book.published_date }}</td>
-            <td>{{ book.category | capfirst}}</td>
-            <td>{{ book.distribution_expense | floatformat:2 | intcomma }}</td>
-            <td>
-              <a hx-get="{% url 'favorites-add' book.pk %}"
-              hx-target="#books-container"
-              hx-swap="outerHTML"
-              class="cursor-pointer">
-              <svg 
-              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
-              </svg>
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
+          {% partialdef infinite_list inline=True %}
+            {% for book in page_obj %}
+              {% if forloop.last and page_obj.has_next %}
+                <tr hx-get="{% url 'get-books' %}?page={{ page_obj.next_page_number }}"
+                hx-trigger="revealed"
+                hx-swap="afterend"
+                hx-include="#filter-form">              
+              {% else %}
+                <tr>
+              {% endif %}
+                <td>{{ book.title }}</td>
+                <td>{{ book.subtitle }}</td>
+                <td>{{ book.authors }}</td>
+                <td>{{ book.publisher }}</td>
+                <td>{{ book.published_date }}</td>
+                <td>{{ book.category | capfirst}}</td>
+                <td>{{ book.distribution_expense | floatformat:2 | intcomma }}</td>
+                <td>
+                  <a hx-get="{% url 'favorites-add' book.pk %}"
+                  hx-target="#books-container"
+                  hx-swap="outerHTML"
+                  class="cursor-pointer">
+                  <svg 
+                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+                  </svg>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          {% endpartialdef %}
         </tbody>
       </table>
 
@@ -145,7 +155,8 @@
       <form hx-get="{% url 'books_list' %}" 
         hx-target="#books-container"
         hx-swap="outerHTML"
-        hx-push-url="true">
+        hx-push-url="true"
+        id="filter-form">
         <div class="mb-2 form-control">
           {{ books.form.search | add_label_class:"label text-white" }}
           {% render_field books.form.search class="select bg-gray-50 text-gray-900" %}
