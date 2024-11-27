@@ -7,6 +7,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django_htmx.http import retarget
 from datetime import datetime
+import time
 from django.core.paginator import Paginator
 #TODO: WRITE TESTS, FAVORITES LIST
 
@@ -96,6 +97,7 @@ def favorites_add(request, pk):
         return render(request, 'partials/books-container.html', context)
     
 def get_books(request):
+    time.sleep(1)
     page = request.GET.get('page', 1)
     books = BookFilter(
         request.GET,
