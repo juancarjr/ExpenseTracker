@@ -9,4 +9,5 @@ urlpatterns = [
     path('delete/<int:pk>', views.favorites_delete, name='favorites-delete'),
     path('add/<int:pk>', views.favorites_add, name='favorites-add'),
     path('get-books', views.get_books, name='get-books'),
+    path('charts/', views.get_charts, name='charts'),
 ]

@@ -3,12 +3,13 @@ from django.contrib.auth.models import User
 from .models import Book, Category, Favorite
 from .filters import BookFilter, FavoriteFilter
 from .forms import BookForm
+from .charting import plot_book_expenses
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django_htmx.http import retarget
 from datetime import datetime
-import time
 from django.core.paginator import Paginator
+
 #TODO: WRITE TESTS, FAVORITES LIST
 
 def index(request):
@@ -20,9 +21,11 @@ def books_list(request):
         request.GET,
         queryset = Book.objects.all().select_related('category', 'publisher')
     )
+
     total_expenses = {}
     for category in Category.objects.all():
         total_expenses[category] = Book.objects.get_expenses(category)
+
     PAGE_SIZE = 30
     query_expense = Book.objects.get_total_expenses()
     paginator = Paginator(books.qs, PAGE_SIZE)
@@ -97,7 +100,6 @@ def favorites_add(request, pk):
         return render(request, 'partials/books-container.html', context)
     
 def get_books(request):
-    time.sleep(1)
     page = request.GET.get('page', 1)
     books = BookFilter(
         request.GET,
@@ -105,5 +107,25 @@ def get_books(request):
     )
     PAGE_SIZE = 30
     paginator = Paginator(books.qs, PAGE_SIZE)
-    context = {'page_obj': paginator.page(page)}
+    context = {'page_obj': paginator.get_page(page)}
     return render(request, 'partials/books-container.html#infinite_list', context)
+
+def get_charts(request):
+    books = BookFilter(
+        request.GET,
+        queryset = Book.objects.all().select_related('category', 'publisher')
+    )
+
+    total_expenses = {}
+    for category in Category.objects.all():
+        total_expenses[category] = Book.objects.get_expenses(category)
+
+    book_expenses_bar = plot_book_expenses(books.qs)
+
+    context = {'books': books,
+               'totals': total_expenses,
+               'query_expense': Book.objects.get_total_expenses(),
+               'book_expenses_bar': book_expenses_bar}
+    if request.htmx:
+        return render(request, 'partials/charts-container.html', context)
+    return render(request, 'charts.html', context)
