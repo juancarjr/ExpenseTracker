@@ -1,0 +1,80 @@
+{% load widget_tweaks %}
+{% load humanize %}
+{% load partials %}
+
+<!-- Defaults to flex, switches to grid in medium sized screens -->
+<div class="flex flex-row-reverse md:grid md:grid-cols-6 md:gap-4" id="charts-container">
+  <!-- Expenses table -->
+  <div class="col-span-6 overflow-x-auto">
+    <table class="table">
+      <thead class="text-xl text-white uppercase">
+          <tr>
+              <th class="px-6 py-3"></th>
+              {% for key in totals.keys %}
+                  <th class="px-6 py-3 text-center">{{ key | capfirst }}</th>
+              {% endfor %}
+              <td class="text-center">TOTAL</td>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <th class="px-6 py-3">COMBINED EXPENSES</th>
+              {% for value in totals.values %}
+                  <td class="text-center">${{ value | floatformat:2 | intcomma }}</td>
+              {% endfor %}
+              <td class="text-center">${{ query_expense | floatformat:2 | intcomma }}</td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Main Table -->
+   <div class="col-span-5">
+    <div class="mb-4">
+      {{ book_expenses_bar | safe}}
+    </div>
+    <div class="mb-4">
+      {{ book_expenses_pie | safe}}
+    </div>
+      <div class="flex justify-center">
+        <span class="loading loading-spinner loading-lg htmx-indicator" id="hx-indicator"></span>
+      </div>
+    </div>
+
+  
+  <!-- Search form -->
+  <div class="col-span-1">
+      <form hx-get="{% url 'charts' %}" 
+        hx-target="#charts-container"
+        hx-swap="outerHTML"
+        hx-push-url="true"
+        hx-indicator="#hx-indicator"
+        id="filter-form">
+
+        <div class="mb-2 form-control">
+          {{ books.form.search | add_label_class:"label text-white" }}
+          {% render_field books.form.search class="select bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          {{ books.form.start_date | add_label_class:"label text-white" }}
+          {% render_field books.form.start_date class="input bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          {{ books.form.end_date | add_label_class:"label text-white" }}
+          {% render_field books.form.end_date class="input bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          <!-- {{ books.form.category | add_label_class:"label text-white" }} -->
+          {% render_field books.form.category class="text-green-500 border-gray-300 rounded focus:ring-green-500" %}
+        </div>
+    
+        <button class="btn btn-success">
+          Filter
+        </button>
+    
+      </form>
+  </div>
+</div>

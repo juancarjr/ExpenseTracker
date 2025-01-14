@@ -1,0 +1,190 @@
+{% load widget_tweaks %}
+{% load humanize %}
+{% load partials %}
+
+<!-- Defaults to flex, switches to grid in medium sized screens -->
+<div class="flex flex-row-reverse md:grid md:grid-cols-6 md:gap-4" id="books-container">
+  <!-- Expenses table -->
+  <div class="col-span-6 overflow-x-auto">
+    <table class="table">
+      <thead class="text-xl text-white uppercase">
+          <tr>
+              <th class="px-6 py-3"></th>
+              {% for key in totals.keys %}
+                  <th class="px-6 py-3 text-center">{{ key | capfirst }}</th>
+              {% endfor %}
+              <td class="text-center">TOTAL</td>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <th class="px-6 py-3">COMBINED EXPENSES</th>
+              {% for value in totals.values %}
+                  <td class="text-center">${{ value | floatformat:2 | intcomma }}</td>
+              {% endfor %}
+              <td class="text-center">${{ query_expense | floatformat:2 | intcomma }}</td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col-span-5 flex items-center justify-between">
+    <h1 class="mt-4 mb-6 prose text-2xl text-white flex items-center mb-4">
+      <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="size-6"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+      />
+    </svg>
+      Book List
+    </h1>
+
+    <h1 class="mt-4 mb-6 prose text-2xl text-white flex items-center mb-4">
+      <svg 
+      xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      <a hx-get="{% url 'add_book' %}"
+      hx-push-url="true"
+      hx-target="#book-block"
+      class="text-white no-underline cursor-pointer">
+      Add Book</a>
+    </h1>
+  </div>
+
+  <!-- Main Table -->
+  <div class="col-span-5">
+      {% if books %}
+
+      <table class="table table-xs text-center">
+        <thead class="text-xs text-white uppercase">
+          <tr>
+            <th class="px-6 py-3">Title</th>
+            <th class="px-6 py-3">Subtitle</th>
+            <th class="px-6 py-3">Authors</th>
+            <th class="px-6 py-3">Publisher</th>
+            <th class="px-6 py-3">Date</th>
+            <th class="px-6 py-3">Category</th>
+            <th class="px-6 py-3">Expenses</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% partialdef infinite_list inline=True %}
+            {% for book in page_obj %}
+              {% if forloop.last and page_obj.has_next %}
+                <tr hx-get="{% url 'get-books' %}?page={{ page_obj.next_page_number }}"
+                hx-trigger="revealed"
+                hx-swap="afterend"
+                hx-include="#filter-form"
+                hx-indicator="#hx-indicator">              
+              {% else %}
+                <tr>
+              {% endif %}
+                <td>{{ book.title }}</td>
+                <td>{{ book.subtitle }}</td>
+                <td>{{ book.authors }}</td>
+                <td>{{ book.publisher }}</td>
+                <td>{{ book.published_date }}</td>
+                <td>{{ book.category | capfirst}}</td>
+                <td>{{ book.distribution_expense | floatformat:2 | intcomma }}</td>
+                <td>
+                  <a hx-get="{% url 'favorites-add' book.pk %}"
+                  hx-target="#books-container"
+                  hx-swap="outerHTML"
+                  class="cursor-pointer">
+                  <svg 
+                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+                  </svg>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          {% endpartialdef %}
+        </tbody>
+      </table>
+
+      {% else %}
+        <p class="text-2xl text-white">No books found</p>
+    {% endif %}
+    
+    <div class="mt-4 text-center">
+      {% if page_obj.has_previous %}
+          <a href="{% querystring page=page_obj.previous_page_number %}">« Previous page</a>
+  
+          {% if page_obj.number > 3 %}
+              <a href="{% querystring page=1 %}">1</a>
+              {% if page_obj.number > 4 %}
+                  <span>...</span>
+              {% endif %}
+          {% endif %}
+      {% endif %}
+  
+      {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+              <a href="{% querystring page=num %}">{{ num }}</a>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <a href="{% querystring page=num %}">{{ num }}</a>
+          {% endif %}
+      {% endfor %}
+  
+      {% if page_obj.has_next %}
+          {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+              <span>...</span>
+              <a href="{% querystring page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+          {% elif page_obj.number < page_obj.paginator.num_pages|add:'-2' %}
+              <a href="{% querystring page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+          {% endif %}
+  
+          <a href="{% querystring page=page_obj.next_page_number %}">Next Page »</a>
+      {% endif %}
+    </div>
+  
+  </div>
+  
+  <!-- Search form -->
+  <div class="col-span-1">
+      <form hx-get="{% url 'books_list' %}" 
+        hx-target="#books-container"
+        hx-swap="outerHTML"
+        hx-push-url="true"
+        id="filter-form">
+        <div class="mb-2 form-control">
+          {{ books.form.search | add_label_class:"label text-white" }}
+          {% render_field books.form.search class="select bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          {{ books.form.start_date | add_label_class:"label text-white" }}
+          {% render_field books.form.start_date class="input bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          {{ books.form.end_date | add_label_class:"label text-white" }}
+          {% render_field books.form.end_date class="input bg-gray-50 text-gray-900" %}
+        </div>
+
+        <div class="mb-2 form-control">
+          <!-- {{ books.form.category | add_label_class:"label text-white" }} -->
+          {% render_field books.form.category class="text-green-500 border-gray-300 rounded focus:ring-green-500" %}
+        </div>
+    
+        <button class="btn btn-success">
+          Filter
+        </button>
+    
+      </form>
+  </div>
+</div>
+<div class="flex justify-center">
+  <span class="loading loading-spinner loading-lg .htmx-indicator" id="hx-indicator"></span>
+</div>
