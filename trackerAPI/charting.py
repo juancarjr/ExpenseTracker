@@ -21,7 +21,6 @@ from .models import Book, Category
 #     return fig.to_html()
 
 def plot_book_expenses(qs):
-    # Assuming qs is a queryset of Book objects with a related Category
     data = []
     for book in qs:
         category_name = book.category.name
@@ -36,6 +35,25 @@ def plot_book_expenses(qs):
         df,
         x='Category',
         y='Total Expenses',
+        title='Total Expenses by Category'
+    )
+    return fig.to_html()
+
+
+def plot_book_expenses_pie(qs):
+    data = []
+    for book in qs:
+        category_name = book.category.name
+        expense = book.distribution_expense
+        data.append({'Category': category_name, 'Total Expenses': expense})
+        
+    df = pd.DataFrame(data)
+    df = df.groupby('Category').sum().reset_index()
+
+    fig = px.pie(
+        df,
+        names='Category',
+        values='Total Expenses',
         title='Total Expenses by Category'
     )
     return fig.to_html()

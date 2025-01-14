@@ -30,7 +30,12 @@
 
   <!-- Main Table -->
    <div class="col-span-5">
-    {{ book_expenses_bar | safe}}
+    <div class="mb-4">
+      {{ book_expenses_bar | safe}}
+    </div>
+    <div class="mb-4">
+      {{ book_expenses_pie | safe}}
+    </div>
       <div class="flex justify-center">
         <span class="loading loading-spinner loading-lg htmx-indicator" id="hx-indicator"></span>
       </div>

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from .models import Book, Category, Favorite
 from .filters import BookFilter, FavoriteFilter
 from .forms import BookForm
-from .charting import plot_book_expenses
+from .charting import plot_book_expenses, plot_book_expenses_pie
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django_htmx.http import retarget
@@ -121,11 +121,14 @@ def get_charts(request):
         total_expenses[category] = Book.objects.get_expenses(category)
 
     book_expenses_bar = plot_book_expenses(books.qs)
+    book_expenses_pie = plot_book_expenses_pie(books.qs)
 
     context = {'books': books,
                'totals': total_expenses,
                'query_expense': Book.objects.get_total_expenses(),
-               'book_expenses_bar': book_expenses_bar}
+               'book_expenses_bar': book_expenses_bar,
+               'book_expenses_pie': book_expenses_pie}
+
     if request.htmx:
         return render(request, 'partials/charts-container.html', context)
     return render(request, 'charts.html', context)
